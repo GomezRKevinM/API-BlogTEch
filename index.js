@@ -3,18 +3,18 @@ const cors = require('cors');
 
 
 const app = express();
-const port = 3000;
+const port = process.env.port || 3000;
 
 const mysql = require('mysql')
-const usuarios = "SELECT * FROM usuarios"
+
 let query;
 
 let conexion = mysql.createConnection({
-    host:"bmbyloffayp6set7ymmr-mysql.services.clever-cloud.com",
-    user:"u5terylf4a51mtq8",
-    password:"vNPpNsder73L70ThQYzy",
-    port:"3306",
-    database:"bmbyloffayp6set7ymmr"
+    host:process.env.host,
+    user:process.env.user,
+    password:process.env.password,
+    port:process.env.port,
+    database:process.env.database
 })
 
 conexion.connect((err)=>{
