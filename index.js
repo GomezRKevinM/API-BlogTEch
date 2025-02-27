@@ -64,6 +64,7 @@ function insertarDatos(tabla,values){
 }
 
 app.use(cors());
+app.use(express.json());
 
 // Ruta API para obtener datos
 app.get('/api/users', (req, res) => {
