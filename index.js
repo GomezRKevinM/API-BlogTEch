@@ -78,9 +78,12 @@ app.get('/api/coments',(req,res)=>{
         .catch(err => res.status(500).send(err))
 })
 app.post('/api/user',(req,res)=>{
-    const values = Object.values(req.body);
+    if (!req.body || Object.keys(req.body).length === 0) {
+        return res.status(400).send('El cuerpo de la solicitud está vacío o no es válido.');
+    }
+    const values = req.body;
     insertarDatos("usuarios",values)
-        .then(data => res.status(201).json(data))
+        .then(data => res.json(data))
         .catch(err => res.status(500).send(err));
 })
 
