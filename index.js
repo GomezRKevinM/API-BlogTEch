@@ -1,7 +1,6 @@
 const express = require('express');
 const cors = require('cors');
 
-
 const app = express();
 const port = 8080;
 
@@ -16,6 +15,9 @@ let conexion = mysql.createConnection({
     port:process.env.port,
     database:process.env.database
 })
+
+app.use(cors());
+app.use(express.json());
 
 conexion.connect((err)=>{
     if(err){
@@ -73,9 +75,6 @@ function insertarDatos(tabla,values){
     })
 }
 
-app.use(cors());
-app.use(express.json());
-
 // Ruta API para obtener datos
 app.get('/api/users', (req, res) => {
     selecionarDatos("usuarios", "Normal", "*", 0)
@@ -93,6 +92,15 @@ app.post('/api/user',(req,res)=>{
     }
     const values = req.body;
     insertarDatos("usuarios", values)
+        .then(data => res.status(201).json({exito: true,data}))
+        .catch(err => res.status(500).json({exito: false,error:err.message}));
+})
+app.post('/api/coment',(req,res)=>{
+    if (!req.body || Object.keys(req.body).length === 0) {
+        return res.status(400).send('El cuerpo de la solicitud está vacío o no es válido.');
+    }
+    const values = req.body;
+    insertarDatos("comentarios", values)
         .then(data => res.status(201).json(data))
         .catch(err => res.status(500).send(err));
 })
