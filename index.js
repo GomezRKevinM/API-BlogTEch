@@ -49,6 +49,20 @@ function selecionarDatos(tabla,tipo,columna,id){
     })
 }
 
+function insertarDatos(tabla,values){
+    return new Promise((resolve,reject)=>{
+        const placeholders = values.map(() => '?').join(',');
+        query=`INSERT INTO ${tabla} VALUES(${placeholders});`;
+        conexion.query(query,(err,lista)=>{
+            if(err){
+                reject(err)
+            }else{
+                resolve(lista)
+            }
+        })
+    })
+}
+
 app.use(cors());
 
 // Ruta API para obtener datos
@@ -61,6 +75,12 @@ app.get('/api/coments',(req,res)=>{
     selecionarDatos("comentarios","Normal","*",0)
         .then(data => res.json(data))
         .catch(err => res.status(500).send(err))
+})
+app.post('/api/user',(req,res)=>{
+    const values = Object.values(req.body);
+    insertarDatos("usuarios",values)
+        .then(data => res.status(201).json(data))
+        .catch(err => res.status(500).send(err));
 })
 
 // Iniciar el servidor
