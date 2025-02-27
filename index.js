@@ -51,8 +51,11 @@ function selecionarDatos(tabla,tipo,columna,id){
 
 function insertarDatos(tabla,values){
     return new Promise((resolve,reject)=>{
-        const placeholders = values.map(() => '?').join(',');
-        query=`INSERT INTO ${tabla} VALUES(${placeholders});`;
+        const keys = Object.keys(values).join(',');
+        const placeholders = Object.keys(values).map(() => '?').join(',');
+        const query = `INSERT INTO ${tabla} (${keys}) VALUES(${placeholders})`;
+        const vals = Object.values(values);
+
         conexion.query(query,(err,lista)=>{
             if(err){
                 reject(err)
@@ -82,8 +85,8 @@ app.post('/api/user',(req,res)=>{
         return res.status(400).send('El cuerpo de la solicitud está vacío o no es válido.');
     }
     const values = req.body;
-    insertarDatos("usuarios",values)
-        .then(data => res.json(data))
+    insertarDatos("usuarios", values)
+        .then(data => res.status(201).json(data))
         .catch(err => res.status(500).send(err));
 })
 
