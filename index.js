@@ -33,10 +33,17 @@ function selecionarDatos(tabla,tipo,columna,id){
                 query="SELECT * FROM "+tabla;
                 break;
             case "Columna":
-                query="SELET '"+columna+"' FROM"+tabla;
+                query="SELECT '"+columna+"' FROM"+tabla;
                 break;
             case "Unico":
-                query="SELECT * FROM "+tabla+" WHERE "+columna+"="+id;
+                query = "SELECT * FROM " + tabla + " WHERE " + columna + " = ?";
+                conexion.query(query, [id], (error, lista) => {
+                    if (error) {
+                        reject(error);
+                    } else {
+                        resolve(lista);
+                    }
+                })
                 break;
         }
         conexion.query(query,(error,lista)=>{
@@ -56,7 +63,7 @@ function insertarDatos(tabla,values){
         const query = `INSERT INTO ${tabla} (${keys}) VALUES(${placeholders})`;
         const vals = Object.values(values);
 
-        conexion.query(query,(err,lista)=>{
+        conexion.query(query,vals,(err,lista)=>{
             if(err){
                 reject(err)
             }else{
