@@ -3,7 +3,7 @@ const cors = require('cors');
 
 
 const app = express();
-const port = process.env.port || 3000;
+const port = 8080;
 
 const mysql = require('mysql')
 
