@@ -128,7 +128,7 @@ app.post('/login',(req,res)=>{
 
             // Verificar credenciales
             if (usuarioDB.usuario === usuario && usuarioDB.password === password) {
-                res.send(`<h1>Bienvenido ${nombre}, su usuario y contraseña han sido corroborados</h1>`);
+                res.json(data);
             } else {
                 res.status(401).send('Credenciales incorrectas.');
             }
