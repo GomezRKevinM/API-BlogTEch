@@ -1,12 +1,20 @@
 const express = require('express');
+const session = require('express-session');
 const cors = require('cors');
 
 const app = express();
 const port = 8080;
 const mysql = require('mysql');
+const host_server = "https://app-8edf8cb5-03b9-4aaa-b441-2dc3b88977d1.cleverapps.io/";
+
+app.use(session({
+    secret: 'S3cUr3!s3sS10nK3y@2025',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: true }
+}));
 
 let query;
-
 
 let conexion = mysql.createConnection({
     host:process.env.host,
@@ -15,6 +23,7 @@ let conexion = mysql.createConnection({
     port:process.env.port,
     database:process.env.database
 })
+
 
 app.use(cors());
 app.use(express.json());
@@ -111,7 +120,7 @@ app.get('/api/users', (req, res) => {
         .then(data => res.json(data))
         .catch(err => res.status(500).send(err));
 });
-app.post('/login',(req,res)=>{
+app.post('/login', (req, res) => {
     if (!req.body || Object.keys(req.body).length === 0) {
         return res.status(400).send('El cuerpo de la solicitud está vacío o no es válido.');
     }
@@ -126,16 +135,30 @@ app.post('/login',(req,res)=>{
 
             const usuarioDB = data[0];
 
-            // Verificar credenciales
             if (usuarioDB.usuario === usuario && usuarioDB.password === password) {
-                res.json(data);
-                res.send(`Usuario confirmado Bienvenido <strong>${nombre}</strong>`)
+                // Registrar la sesión
+                req.session.usuarioID = usuarioDB.id;
+                req.session.usuario = usuarioDB.usuario;
+                req.session.rol = usuarioDB.rol;
+                res.json({ mensaje: 'Inicio de sesión exitoso', usuario: usuarioDB });
             } else {
                 res.status(401).send('Credenciales incorrectas.');
             }
         })
         .catch(err => res.status(500).send(err));
-})
+});
+app.get('/session', (req, res) => {
+    if (req.session.usuarioID) {
+        res.json({
+            mensaje: 'Sesión activa',
+            usuarioID: req.session.usuarioID,
+            usuario: req.session.usuario,
+            rol: req.session.rol
+        });
+    } else {
+        res.status(401).send('No hay una sesión activa.');
+    }
+});
 app.get('/api/coments',(req,res)=>{
     selecionarDatos("comentarios","Normal","*",0)
         .then(data => res.json(data))
@@ -172,5 +195,5 @@ app.put('/api/user/update',(req,res)=>{
 
 // Iniciar el servidor
 app.listen(port, () => {
-    console.log(`Servidor corriendo en http://localhost:${port}`);
+    console.log(`Servidor corriendo en ${host_server}`);
 });
