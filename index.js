@@ -3,10 +3,10 @@ const cors = require('cors');
 
 const app = express();
 const port = 8080;
-
-const mysql = require('mysql')
+const mysql = require('mysql');
 
 let query;
+
 
 let conexion = mysql.createConnection({
     host:process.env.host,
@@ -75,12 +75,66 @@ function insertarDatos(tabla,values){
     })
 }
 
+function actualizarDatos(tabla, valores, condicion) {
+    return new Promise((resolve, reject) => {
+
+        const keys = Object.keys(valores);
+        const placeholders = keys.map(key => `${key} = ?`).join(', ');
+        const query = `UPDATE ${tabla} SET ${placeholders}`;
+
+        
+        const condKeys = Object.keys(condicion);
+        const condPlaceholders = condKeys.map(key => `${key} = ?`).join(' AND ');
+        const whereClause = ` WHERE ${condPlaceholders}`;
+
+        // Combinar la consulta con la cláusula WHERE
+        const finalQuery = query + whereClause;
+
+        // Obtener los valores del objeto `valores` y las condiciones
+        const vals = [...Object.values(valores), ...Object.values(condicion)];
+
+        // Ejecutar la consulta SQL
+        conexion.query(finalQuery, vals, (err, resultado) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(resultado);
+            }
+        });
+    });
+}
+
+
 // Ruta API para obtener datos
 app.get('/api/users', (req, res) => {
     selecionarDatos("usuarios", "Normal", "*", 0)
         .then(data => res.json(data))
         .catch(err => res.status(500).send(err));
 });
+app.post('/login',(req,res)=>{
+    if (!req.body || Object.keys(req.body).length === 0) {
+        return res.status(400).send('El cuerpo de la solicitud está vacío o no es válido.');
+    }
+    
+    const { id, usuario, password, rol, nombre } = req.body;
+
+    selecionarDatos("usuarios", "Unico", "id", id)
+        .then(data => {
+            if (data.length === 0) {
+                return res.status(404).send('Usuario no encontrado.');
+            }
+
+            const usuarioDB = data[0];
+
+            // Verificar credenciales
+            if (usuarioDB.usuario === usuario && usuarioDB.password === password) {
+                res.send(`<h1>Bienvenido ${nombre}, su usuario y contraseña han sido corroborados</h1>`);
+            } else {
+                res.status(401).send('Credenciales incorrectas.');
+            }
+        })
+        .catch(err => res.status(500).send(err));
+})
 app.get('/api/coments',(req,res)=>{
     selecionarDatos("comentarios","Normal","*",0)
         .then(data => res.json(data))
@@ -101,8 +155,18 @@ app.post('/api/coment',(req,res)=>{
     }
     const values = req.body;
     insertarDatos("comentarios", values)
-        .then(data => res.status(201).json(data))
+        .then(data => res.status(201).json({exito:true,data}))
         .catch(err => res.status(500).send(err));
+})
+app.put('/api/user/update',(req,res)=>{
+    if (!req.body || Object.keys(req.body).length === 0) {
+        return res.status(400).send('El cuerpo de la solicitud está vacío o no es válido.');
+    }
+    const values = req.body;
+    const condicion = {
+        id:id_user
+    }
+    actualizarDatos("usuarios",values,condicion)
 })
 
 // Iniciar el servidor
