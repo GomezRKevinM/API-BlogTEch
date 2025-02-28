@@ -116,9 +116,9 @@ app.post('/login',(req,res)=>{
         return res.status(400).send('El cuerpo de la solicitud está vacío o no es válido.');
     }
     
-    const { id, usuario, password, rol, nombre } = req.body;
+    const { usuario, password } = req.body;
 
-    selecionarDatos("usuarios", "Unico", "id", id)
+    selecionarDatos("usuarios", "Unico", "usuario", usuario)
         .then(data => {
             if (data.length === 0) {
                 return res.status(404).send('Usuario no encontrado.');
