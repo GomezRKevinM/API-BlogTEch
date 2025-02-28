@@ -2,6 +2,7 @@ const express = require('express');
 const session = require('express-session');
 const cors = require('cors');
 
+
 const app = express();
 const port = 8080;
 const mysql = require('mysql');
@@ -136,11 +137,13 @@ app.post('/login', (req, res) => {
             const usuarioDB = data[0];
 
             if (usuarioDB.usuario === usuario && usuarioDB.password === password) {
+                
                 // Registrar la sesión
                 req.session.usuarioID = usuarioDB.id;
                 req.session.usuario = usuarioDB.usuario;
                 req.session.rol = usuarioDB.rol;
-                res.json({ mensaje: 'Inicio de sesión exitoso', usuario: usuarioDB });
+                req.session.nombre = usuarioDB.nombre;
+                res.json({ mensaje: 'Inicio de sesión exitoso', usuario: usuarioDB,exito:true });
             } else {
                 res.status(401).send('Credenciales incorrectas.');
             }
@@ -153,7 +156,8 @@ app.get('/session', (req, res) => {
             mensaje: 'Sesión activa',
             usuarioID: req.session.usuarioID,
             usuario: req.session.usuario,
-            rol: req.session.rol
+            rol: req.session.rol,
+            exito:true
         });
     } else {
         res.status(401).send('No hay una sesión activa.');
@@ -192,6 +196,16 @@ app.put('/api/user/update',(req,res)=>{
     }
     actualizarDatos("usuarios",values,condicion)
 })
+app.post('/logout', (req, res) => {
+    // Destruir la sesión del usuario
+    req.session.destroy(err => {
+        if (err) {
+            return res.status(500).send('Hubo un error al cerrar la sesión.');
+        }
+        res.send({ mensaje: 'Sesión cerrada exitosamente', exito: true });
+    });
+});
+
 
 // Iniciar el servidor
 app.listen(port, () => {
