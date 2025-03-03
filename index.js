@@ -121,48 +121,36 @@ app.get('/api/users', (req, res) => {
         .then(data => res.json(data))
         .catch(err => res.status(500).send(err));
 });
-app.post('/login', (req, res) => {
-    if (!req.body || Object.keys(req.body).length === 0) {
-        return res.status(400).send('El cuerpo de la solicitud está vacío o no es válido.');
-    }
+// app.post('/login', (req, res) => {
+//     if (!req.body || Object.keys(req.body).length === 0) {
+//         return res.status(400).send('El cuerpo de la solicitud está vacío o no es válido.');
+//     }
     
-    const { usuario, password } = req.body;
+//     const { usuario, password } = req.body;
 
-    selecionarDatos("usuarios", "Unico", "usuario", usuario)
-        .then(data => {
-            if (data.length === 0) {
-                return res.status(404).send('Usuario no encontrado.');
-            }
+//     selecionarDatos("usuarios", "Unico", "usuario", usuario)
+//         .then(data => {
+//             if (data.length === 0) {
+//                 return res.status(404).send('Usuario no encontrado.');
+//             }
 
-            const usuarioDB = data[0];
+//             const usuarioDB = data[0];
 
-            if (usuarioDB.usuario === usuario && usuarioDB.password === password) {
+//             if (usuarioDB.usuario === usuario && usuarioDB.password === password) {
                 
-                // Registrar la sesión
-                req.session.usuarioID = usuarioDB.id;
-                req.session.usuario = usuarioDB.usuario;
-                req.session.rol = usuarioDB.rol;
-                req.session.nombre = usuarioDB.nombre;
-                res.json({ mensaje: 'Inicio de sesión exitoso', usuario: usuarioDB,exito:true });
-            } else {
-                res.status(401).send('Credenciales incorrectas.');
-            }
-        })
-        .catch(err => res.status(500).send(err));
-});
-app.get('/session', (req, res) => {
-    if (req.session.usuarioID) {
-        res.json({
-            mensaje: 'Sesión activa',
-            usuarioID: req.session.usuarioID,
-            usuario: req.session.usuario,
-            rol: req.session.rol,
-            exito:true
-        });
-    } else {
-        res.status(401).send('No hay una sesión activa.');
-    }
-});
+//                 // Registrar la sesión
+//                 req.session.usuarioID = usuarioDB.id;
+//                 req.session.usuario = usuarioDB.usuario;
+//                 req.session.rol = usuarioDB.rol;
+//                 req.session.nombre = usuarioDB.nombre;
+//                 res.json({ mensaje: 'Inicio de sesión exitoso', usuario: usuarioDB,exito:true });
+//             } else {
+//                 res.status(401).send('Credenciales incorrectas.');
+//             }
+//         })
+//         .catch(err => res.status(500).send(err));
+// });
+
 app.get('/api/coments',(req,res)=>{
     selecionarDatos("comentarios","Normal","*",0)
         .then(data => res.json(data))
@@ -196,16 +184,6 @@ app.put('/api/user/update',(req,res)=>{
     }
     actualizarDatos("usuarios",values,condicion)
 })
-app.post('/logout', (req, res) => {
-    // Destruir la sesión del usuario
-    req.session.destroy(err => {
-        if (err) {
-            return res.status(500).send('Hubo un error al cerrar la sesión.');
-        }
-        res.send({ mensaje: 'Sesión cerrada exitosamente', exito: true });
-    });
-});
-
 
 // Iniciar el servidor
 app.listen(port, () => {
