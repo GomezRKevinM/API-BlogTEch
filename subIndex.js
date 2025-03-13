@@ -5,7 +5,7 @@ const mysql = require('mysql');
 // const morgan = require('morgan');
 
 const app = express();
-const port = process.env.PORT || 8080;
+const port = process.env.PORT;
 
 // Configuración de la sesión
 app.use(session({
@@ -17,7 +17,7 @@ app.use(session({
 
 // Configuración de CORS
 const corsOptions = {
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin: process.env.FRONTEND_URL,
     methods: 'GET,POST,PUT,DELETE',
     credentials: true
 };
@@ -28,11 +28,11 @@ app.use(cors(corsOptions));
 
 // Conexión a la base de datos
 const conexion = mysql.createConnection({
-    host: process.env.host || 'localhost',
-    user: process.env.user || 'root',
-    password: process.env.password || '',
-    port: process.env.DB_PORT || 3306,
-    database: process.env.database || 'mydatabase'
+    host: process.env.host,
+    user: process.env.user,
+    password: process.env.password,
+    port: process.env.DB_PORT,
+    database: process.env.database
 });
 
 conexion.connect((err) => {
