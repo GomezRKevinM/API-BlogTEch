@@ -2,7 +2,7 @@ const express = require('express');
 const session = require('express-session');
 const cors = require('cors');
 const mysql = require('mysql');
-const morgan = require('morgan');
+// const morgan = require('morgan');
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -23,8 +23,8 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
-// Middleware para logging
-app.use(morgan('dev'));
+// // Middleware para logging
+// app.use(morgan('dev'));
 
 // Conexión a la base de datos
 const conexion = mysql.createConnection({
