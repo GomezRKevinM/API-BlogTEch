@@ -2,10 +2,10 @@
   "name": "blogtech",
   "version": "1.0.0",
   "description": "[pagina web](https://gomezrkevinm.github.io/BlogTech/public/)",
-  "main": "subIndex.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node subIndex.js"
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
