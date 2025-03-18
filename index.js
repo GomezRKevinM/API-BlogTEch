@@ -22,6 +22,7 @@ let conexion = mysql.createConnection({
     user:process.env.user,
     password:process.env.password,
     port:3306,
+    timeout:60000,
     database:process.env.database
 })
 
