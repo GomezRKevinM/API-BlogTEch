@@ -196,7 +196,7 @@ app.get("/login/autenticacion",async(req,res)=>{
                 password:datos.password
             }
         })
-        .then(data => res.status(200).json({exito:true,data:data.rows,message:"login exitoso",ok:true}))
+        .then(data => res.status(200).json({exito:true,data:data,message:"login exitoso",ok:true}))
         .catch(err => res.status(500).send(err));
         
     }catch(err){    
