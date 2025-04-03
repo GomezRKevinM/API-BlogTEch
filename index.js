@@ -6,12 +6,17 @@ import { createClient } from '@libsql/client';
 import mysql from 'mysql';
 
 dotenv.config()
-
+const corsOptions = {
+    origin: '*',
+    methods: 'GET,POST,PUT,DELETE',
+    credentials: true
+  };
 
 const app = express();
 const port = 8080;
 const host_server = "https://app-8edf8cb5-03b9-4aaa-b441-2dc3b88977d1.cleverapps.io/";
 
+app.use(cors(corsOptions));
 app.use(session({
     secret: 'S3cUr3!s3sS10nK3y@2025',
     resave: false,
@@ -27,7 +32,6 @@ export const turso = createClient({
 });
 
 
-app.use(cors());
 app.use(express.json());
 
 
