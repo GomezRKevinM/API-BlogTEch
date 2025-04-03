@@ -55,21 +55,6 @@ app.get('/api/users', async (req, res) => {
     }
 
 });
-app.get("api/post",async(req,res)=>{
-    try{
-        const id = req.params.id;
-        const request = await turso.execute({
-            sql: 'SELECT * FROM publicacion WHERE id = :id',
-            args: { id }
-        })
-        .then(data => res.status(200).json({message:"posts obtenidos",data:data.rows}))
-        .catch(err => res.status(500).json({message:"error",error:err.message}));
-        
-    }catch(err){
-        res.status(500).json({message:"error",error:err.message});
-        console.error(err);
-    }
-})
 // app.post('/login', (req, res) => {
 //     if (!req.body || Object.keys(req.body).length === 0) {
 //         return res.status(400).send('El cuerpo de la solicitud está vacío o no es válido.');
@@ -165,6 +150,16 @@ app.get('/foro/categorias',async(req,res)=>{
     }
 })
 app.get('/foro/publicaciones/',async(req,res)=>{
+    try{
+        const request = await turso.execute("SELECT * FROM publicacion")
+        .then(data => res.status(200).json(data.rows))
+        .catch(err => res.status(500).send(err));
+    }catch(err){
+        res.status(500).json({message:"error",error:err.message,ok:false});
+        console.error(err);
+    }
+})
+app.get('/foro/publicaciones/:id',async(req,res)=>{
     try{
         const request = await turso.execute("SELECT * FROM publicacion")
         .then(data => res.status(200).json(data.rows))
