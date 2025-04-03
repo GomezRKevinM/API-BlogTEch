@@ -109,7 +109,7 @@ app.post('/api/coment',async(req,res)=>{
         const query = 'INSERT INTO comentarios (usuario,comentario) VALUES (?,?)';
         const request = await turso.execute({
             sql: query,
-            bindings: [,values.usuario,values.comentario]
+            bindings: [values.usuario,values.comentario]
         });
         res.status(200).json({message:"ok",data:request.rows,ok:true});
     }catch(err){
