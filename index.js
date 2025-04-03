@@ -45,9 +45,10 @@ app.use(express.json());
 app.get('/api/users', async (req, res) => {
     try{
         const query = 'SELECT * FROM usuarios';
-        const request = await turso.execute(query);
-        const data = await request.all();
-        res.status(200).json({message:"ok",data});
+        const request = await turso.execute(query)
+        .then(data => res.status(200).json({message:"usuarios obtenidos",data:data.rows}))
+        .catch(err => res.status(500).json({message:"error",error:err.message}));
+        
     }catch(err){
         res.status(500).json({message:"error",error:err.message});
         console.error(err);
@@ -136,6 +137,27 @@ app.put('/api/user/update',(req,res)=>{
         id:id_user
     }
     actualizarDatos("usuarios",values,condicion)
+})
+app.get('/foro/categorias',async(req,res)=>{
+    try{
+        const request = await turso.execute("SELECT * FROM categoria")
+        .then(data => res.status(200).json(data.rows))
+        .catch(err => res.status(500).send(err));
+    }
+    catch(err){
+        res.status(500).json({message:"error",error:err.message});
+        console.error(err);
+    }
+})
+app.get('/foro/publicaciones/',async(req,res)=>{
+    try{
+        const request = await turso.execute("SELECT * FROM publicacion")
+        .then(data => res.status(200).json(data.rows))
+        .catch(err => res.status(500).send(err));
+    }catch(err){
+        res.status(500).json({message:"error",error:err.message,ok:false});
+        console.error(err);
+    }
 })
 
 // Iniciar el servidor
