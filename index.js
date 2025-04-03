@@ -115,7 +115,7 @@ app.post('/api/coment',async(req,res)=>{
         const query = 'INSERT INTO comentarios (usuario,comentario,post) VALUES (:usuario,:comentario,:post)';
         const request = await turso.execute({
             sql: query,
-            args:{usuario:values.usuario,comentario:values.comentario,post:0}
+            args:{usuario:values.usuario,comentario:values.comentario,post:values.post}
         });
         if(request.rowsAffected>0){
             res.status(200).json({message:"comentario enviado",data:request.rows,ok:true});
@@ -177,6 +177,23 @@ app.get("/foro/comentarios/:id",async(req,res)=>{
             args:{id}
         })
         .then(data => res.status(200).json(data.rows))
+        .catch(err => res.status(500).send(err));
+    }catch(err){    
+        res.status(500).json({message:"error",error:err.message,ok:false});
+        console.error(err);
+    }
+})
+
+// autenticaciones
+
+app.post("/authLogin",async(req,res)=>{
+    try{
+        const {usuario,password} = req.body;
+        const request = await turso.execute({
+            sql:"SELECT * FROM usuarios WHERE username=:usuario AND password=:password",
+            args:{usuario,password}
+        })
+        .then(data => res.status(200).json({exito:true,data:data.rows,message:"login exitoso",ok:true}))
         .catch(err => res.status(500).send(err));
     }catch(err){    
         res.status(500).json({message:"error",error:err.message,ok:false});
