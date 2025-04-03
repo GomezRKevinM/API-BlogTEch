@@ -4,6 +4,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { createClient } from '@libsql/client'; 
 import morgan from 'morgan';
+import e from 'express';
 
 
 
@@ -115,7 +116,11 @@ app.post('/api/coment',async(req,res)=>{
             sql: query,
             args:{usuario:values.usuario,comentario:values.comentario}
         });
-        res.status(200).json({message:"ok",data:request.rows,ok:true});
+        if(request.rowsAffected>0){
+            res.status(200).json({message:"comentario enviado",data:request.rows,ok:true});
+        }else{
+            res.status(500).json({message:"error al enviar datos",error:err.message});
+        }
     }catch(err){
         res.status(500).json({message:"error",error:err.message});
         console.error(err);
