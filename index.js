@@ -18,6 +18,7 @@ app.use((req, res, next) => {
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     next();
   });
+app.use(cors(corsOptions));
 const port = 8080;
 const host_server = "https://app-8edf8cb5-03b9-4aaa-b441-2dc3b88977d1.cleverapps.io/";
 
@@ -38,10 +39,16 @@ app.use(express.json());
 
 // Ruta API para obtener datos
 app.get('/api/users', async (req, res) => {
-    const query = 'SELECT * FROM usuarios';
-    const request = await turso.execute(query);
-    const data = await request.all();
-    res.status(200).json({message:"ok",data});
+    try{
+        const query = 'SELECT * FROM usuarios';
+        const request = await turso.execute(query);
+        const data = await request.all();
+        res.status(200).json({message:"ok",data});
+    }catch(err){
+        res.status(500).json({message:"error",error:err.message});
+        console.error(err);
+    }
+
 });
 // app.post('/login', (req, res) => {
 //     if (!req.body || Object.keys(req.body).length === 0) {
@@ -74,9 +81,14 @@ app.get('/api/users', async (req, res) => {
 // });
 
 app.get('/api/coments',async (req,res)=>{
-    const request = await turso.execute("SELECT * FROM comentarios")
-    .then(data => res.status(200).json(data.rows))
-    .catch(err => res.status(500).send(err));
+    try{
+        const request = await turso.execute("SELECT * FROM comentarios")
+        .then(data => res.status(200).json(data.rows))
+        .catch(err => res.status(500).send(err));
+    }catch(err){
+        res.status(500).json({message:"error",error:err.message});
+        console.error(err);
+    }
 })
 
 app.post('/api/user',async (req,res)=>{
@@ -89,13 +101,22 @@ app.post('/api/user',async (req,res)=>{
         .catch(err => res.status(500).json({exito: false,error:err.message}));
 })
 app.post('/api/coment',async(req,res)=>{
-    if (!req.body || Object.keys(req.body).length === 0) {
-        return res.status(400).send('El cuerpo de la solicitud está vacío o no es válido.');
+    try{
+        if (!req.body || Object.keys(req.body).length === 0) {
+            return res.status(400).send('El cuerpo de la solicitud está vacío o no es válido.');
+        }
+        const values = req.body;
+        const query = 'INSERT INTO comentarios (usuario,comentario) VALUES (?,?)';
+        const request = await turso.execute({
+            sql: query,
+            bindings: [,values.usuario,values.comentario]
+        });
+        res.status(200).json({message:"ok",data:request.rows,ok:true});
+    }catch(err){
+        res.status(500).json({message:"error",error:err.message});
+        console.error(err);
     }
-    const values = req.body;
-    const query = 'INSERT INTO comentarios (comentario) VALUES (?)';
-    const request = await turso.execute(query);
-    res.status(200).json({message:"ok",data:request.rows,ok:true});
+
 })
 app.put('/api/user/update',(req,res)=>{
     if (!req.body || Object.keys(req.body).length === 0) {
