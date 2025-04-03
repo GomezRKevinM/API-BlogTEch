@@ -169,7 +169,7 @@ app.get('/foro/publicaciones/:id',async(req,res)=>{
         console.error(err);
     }
 })
-app.get("foro/comentarios/:id",async(req,res)=>{
+app.get("/foro/comentarios/:id",async(req,res)=>{
     try{
         const id = req.params.id
         const request = await turso.execute({
