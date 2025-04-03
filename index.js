@@ -74,11 +74,11 @@ app.get('/api/users', async (req, res) => {
 // });
 
 app.get('/api/coments',async (req,res)=>{
-    const query = 'SELECT * FROM comentarios';
-    const request = await turso.execute(query);
-    const data = await request.all();
-    res.status(200).json({message:"ok",data:data,ok:true});
+    const request = await turso.execute("SELECT * FROM comentarios")
+    .then(data => res.status(200).json(data))
+    .catch(err => res.status(500).send(err));
 })
+
 app.post('/api/user',async (req,res)=>{
     if (!req.body || Object.keys(req.body).length === 0) {
         return res.status(400).send('El cuerpo de la solicitud está vacío o no es válido.');
