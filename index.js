@@ -2,7 +2,9 @@ import express from 'express';
 import session from 'express-session';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { createClient } from '@libsql/client';  
+import { createClient } from '@libsql/client'; 
+import morgan from 'morgan';
+
 
 
 dotenv.config()
@@ -19,6 +21,7 @@ app.use((req, res, next) => {
     next();
   });
 app.use(cors(corsOptions));
+app.use(morgan('dev'));
 const port = 8080;
 const host_server = "https://app-8edf8cb5-03b9-4aaa-b441-2dc3b88977d1.cleverapps.io/";
 
