@@ -75,8 +75,7 @@ app.get('/api/users', async (req, res) => {
 
 app.get('/api/coments',async (req,res)=>{
     const request = await turso.execute("SELECT * FROM comentarios")
-    const datos = request.rows
-    .then(data => res.status(200).json(datos))
+    .then(data => res.status(200).json(data.rows))
     .catch(err => res.status(500).send(err));
 })
 
