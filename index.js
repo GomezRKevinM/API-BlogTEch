@@ -189,7 +189,12 @@ app.get("/foro/comentarios/:id",async(req,res)=>{
 app.post("/authLogin",async(req,res)=>{
     try{
         const {username,password} = req.body;
-        const request = await turso.execute(`SELECT * FROM usuarios WHERE usuario = ${username} AND password = ${password}`)
+        const request = await turso.execute(`SELECT * FROM usuarios WHERE usuario = :usuario AND password = :password`,{
+            args:{
+                usuario:username,
+                password:password
+            }
+        })
         .then(data => res.status(200).json({exito:true,data:data.rows,message:"login exitoso",ok:true}))
         .catch(err => res.status(500).send(err));
         
