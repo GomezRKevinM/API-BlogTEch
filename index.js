@@ -3,7 +3,7 @@ import session from 'express-session';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { createClient } from '@libsql/client';  
-import mysql from 'mysql';
+
 
 dotenv.config()
 const corsOptions = {
@@ -17,6 +17,11 @@ const port = 8080;
 const host_server = "https://app-8edf8cb5-03b9-4aaa-b441-2dc3b88977d1.cleverapps.io/";
 
 app.use(cors(corsOptions));
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    next();
+  });
 app.use(session({
     secret: 'S3cUr3!s3sS10nK3y@2025',
     resave: false,
