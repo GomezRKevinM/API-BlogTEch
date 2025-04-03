@@ -112,10 +112,10 @@ app.post('/api/coment',async(req,res)=>{
         }
         const values = req.body;
         console.log(values);
-        const query = 'INSERT INTO comentarios (usuario,comentario) VALUES (:usuario,:comentario)';
+        const query = 'INSERT INTO comentarios (usuario,comentario,post) VALUES (:usuario,:comentario,:post)';
         const request = await turso.execute({
             sql: query,
-            args:{usuario:values.usuario,comentario:values.comentario}
+            args:{usuario:values.usuario,comentario:values.comentario,post:0}
         });
         if(request.rowsAffected>0){
             res.status(200).json({message:"comentario enviado",data:request.rows,ok:true});
