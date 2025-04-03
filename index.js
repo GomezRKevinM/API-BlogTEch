@@ -75,7 +75,8 @@ app.get('/api/users', async (req, res) => {
 
 app.get('/api/coments',async (req,res)=>{
     const request = await turso.execute("SELECT * FROM comentarios")
-    .then(data => res.status(200).json(data))
+    const datos = request.rows
+    .then(data => res.status(200).json(datos))
     .catch(err => res.status(500).send(err));
 })
 
@@ -95,8 +96,7 @@ app.post('/api/coment',async(req,res)=>{
     const values = req.body;
     const query = 'INSERT INTO comentarios (comentario) VALUES (?)';
     const request = await turso.execute(query);
-    const data = await request.run(values.comentario);
-    res.status(200).json({message:"ok",data:data,ok:true});
+    res.status(200).json({message:"ok",data:request.rows,ok:true});
 })
 app.put('/api/user/update',(req,res)=>{
     if (!req.body || Object.keys(req.body).length === 0) {
