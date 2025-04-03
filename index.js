@@ -1,11 +1,15 @@
-const express = require('express');
-const session = require('express-session');
-const cors = require('cors');
+import express from 'express';
+import session from 'express-session';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import { createClient } from '@libsql/client';  
+import mysql from 'mysql';
+
+dotenv.config()
 
 
 const app = express();
 const port = 8080;
-const mysql = require('mysql');
 const host_server = "https://app-8edf8cb5-03b9-4aaa-b441-2dc3b88977d1.cleverapps.io/";
 
 app.use(session({
@@ -17,30 +21,18 @@ app.use(session({
 
 let query;
 
-let conexion = mysql.createConnection({
-    host:process.env.host,
-    user:process.env.user,
-    password:process.env.password,
-    port:3306,
-    timeout:60000,
-    database:process.env.database
-})
+export const turso = createClient({
+    url: process.env.TURSO_URL,
+    authToken: process.env.TURSO_TOKEN,
+});
 
 
 app.use(cors());
 app.use(express.json());
 
-conexion.connect((err)=>{
-    if(err){
-        throw err;
-        conexion.end()
-    }else{
-        console.log("Conexión exitosa")
-    }
-})
 
 function selecionarDatos(tabla,tipo,columna,id){
-    return new Promise((resolve,reject)=>{
+    return new Promise(async (resolve,reject)=>{
         switch (tipo){
             case "Normal":
                 query="SELECT * FROM "+tabla;
@@ -49,45 +41,32 @@ function selecionarDatos(tabla,tipo,columna,id){
                 query="SELECT '"+columna+"' FROM"+tabla;
                 break;
             case "Unico":
-                query = "SELECT * FROM " + tabla + " WHERE " + columna + " = ?";
-                conexion.query(query, [id], (error, lista) => {
-                    if (error) {
-                        reject(error);
-                    } else {
-                        resolve(lista);
-                    }
-                })
+                query = "SELECT * FROM " + tabla + " WHERE " + columna + " = :id";
                 break;
         }
-        conexion.query(query,(error,lista)=>{
-            if(error){
-                reject(error)
-            }else{
-                resolve(lista)
-            }
-        }) 
+        const resultado = await turso.execute({
+            sql: query,
+            args: { ide:this.id }
+        })
+        resolve(resultado)
+
     })
 }
 
 function insertarDatos(tabla,values){
-    return new Promise((resolve,reject)=>{
+    return new Promise(async (resolve,reject)=>{
         const keys = Object.keys(values).join(',');
         const placeholders = Object.keys(values).map(() => '?').join(',');
         const query = `INSERT INTO ${tabla} (${keys}) VALUES(${placeholders})`;
         const vals = Object.values(values);
 
-        conexion.query(query,vals,(err,lista)=>{
-            if(err){
-                reject(err)
-            }else{
-                resolve(lista)
-            }
-        })
+        const resultado = await turso.execute(query) 
+        resolve(resultado)       
     })
 }
 
 function actualizarDatos(tabla, valores, condicion) {
-    return new Promise((resolve, reject) => {
+    return new Promise(async(resolve, reject) => {
 
         const keys = Object.keys(valores);
         const placeholders = keys.map(key => `${key} = ?`).join(', ');
@@ -105,13 +84,9 @@ function actualizarDatos(tabla, valores, condicion) {
         const vals = [...Object.values(valores), ...Object.values(condicion)];
 
         // Ejecutar la consulta SQL
-        conexion.query(finalQuery, vals, (err, resultado) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(resultado);
-            }
-        });
+        
+        const resultado = await turso.execute(finalQuery, vals);
+        resolve(resultado);
     });
 }
 

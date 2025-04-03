@@ -14,13 +14,15 @@
   "keywords": [],
   "author": "Kevin Gómez",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "bugs": {
     "url": "https://github.com/GomezRKevinM/BlogTech/issues"
   },
   "homepage": "https://github.com/GomezRKevinM/BlogTech/public",
   "dependencies": {
+    "@libsql/client": "^0.15.2",
     "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "express-session": "^1.18.1",
     "mysql": "^2.18.1"
