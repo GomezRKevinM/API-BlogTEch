@@ -190,7 +190,7 @@ app.get("/login/autenticacion",async(req,res)=>{
     try{
         const datos = req.body;
         const request = await turso.execute({
-            sql:"SELECT * FROM usuarios WHERE usuario = :usuario AND password = :password",
+            sql:"SELECT * FROM usuario WHERE username = :usuario AND password = :password",
             args:{
                 usuario:datos.username,
                 password:datos.password
