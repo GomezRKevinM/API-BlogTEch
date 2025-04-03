@@ -39,7 +39,7 @@ app.use(express.json());
 // Ruta API para obtener datos
 app.get('/api/users', async (req, res) => {
     const query = 'SELECT * FROM usuarios';
-    const request = await turso.query(query);
+    const request = await turso.execute(query);
     const data = await request.all();
     res.status(200).json({message:"ok",data});
 });
@@ -75,7 +75,7 @@ app.get('/api/users', async (req, res) => {
 
 app.get('/api/coments',async (req,res)=>{
     const query = 'SELECT * FROM comentarios';
-    const request = await turso.query(query);
+    const request = await turso.execute(query);
     const data = await request.all();
     res.status(200).json({message:"ok",data:data,ok:true});
 })
@@ -94,7 +94,7 @@ app.post('/api/coment',async(req,res)=>{
     }
     const values = req.body;
     const query = 'INSERT INTO comentarios (comentario) VALUES (?)';
-    const request = await turso.query(query);
+    const request = await turso.execute(query);
     const data = await request.run(values.comentario);
     res.status(200).json({message:"ok",data:data,ok:true});
 })
