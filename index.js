@@ -186,7 +186,7 @@ app.get("/foro/comentarios/:id",async(req,res)=>{
 
 // autenticaciones
 
-app.post("/authLogin",async(req,res)=>{
+app.post("/login/autenticacion",async(req,res)=>{
     try{
         const datos = req.body;
         const request = await turso.execute(`SELECT * FROM usuarios WHERE usuario = :usuario AND password = :password`,{
