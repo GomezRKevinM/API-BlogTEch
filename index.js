@@ -202,6 +202,91 @@ app.post("/foro/comentario/",async(req,res)=>{
     }
     
 })
+app.post("/foro/likes",async(req,res)=>{
+    try{
+        const values = req.body;
+        const query = 'INSERT INTO likes (usuario,post) VALUES (:usuario,:post)';
+        const request = await turso.execute({
+            sql: query,
+            args:{usuario:values.usuario,post:values.post}
+        });
+        if(request.rowsAffected>0){
+            const update = await turso.execute({
+                sql:"UPDATE publicacion SET likes=likes+1 WHERE id=:id",
+                args:{id:values.post}
+            })
+            res.status(200).json({message:"like enviado",data:request.rows,ok:true});
+        }else{
+            res.status(500).json({message:"error al enviar datos",error:err.message});
+        }
+    }catch(err){
+        res.status(500).json({message:"error",error:err.message,ok:false});
+        console.error(err);
+    }
+})
+app.post("/foro/dislike",async(req,res)=>{
+    try{
+        const values = req.body;        
+        const update = await turso.execute({
+            sql:"UPDATE publicacion SET likes=likes-1 WHERE id=:id",
+            args:{id:values.post}
+        })
+        const request = await turso.execute({
+            sql:"DELETE FROM likes WHERE usuario=:usuario AND post=:post",
+            args:{usuario:values.usuario,post:values.post}
+        });
+        if(request.rowsAffected>0){
+            res.status(200).json({message:"dislike enviado",data:request.rows,ok:true});
+        }else{
+            res.status(500).json({message:"error al enviar datos",error:err.message});
+        }
+    }catch(err){
+        res.status(500).json({message:"error",error:err.message,ok:false});
+        console.error(err);
+    }
+})
+
+app.get("/foro/userLikes",async(req,res)=>{
+    try{
+        const request = await turso.execute({
+            sql:"SELECT * FROM likes WHERE usuario=:usuario",
+            args:{usuario:values.usuario}
+        })
+        .then(data => res.status(200).json(data.rows))
+        .catch(err => res.status(500).send(err));
+    }catch(err){    
+        res.status(500).json({message:"error",error:err.message,ok:false});
+        console.error(err);    
+    }
+})
+app.get("/foro/post/:id/likes",async(req,res)=>{
+    try{
+        const id = req.params.id
+        const request = await turso.execute({
+            sql:"SELECT * FROM likes WHERE post=:id",
+            args:{id}
+        })
+        .then(data => res.status(200).json(data.rows))
+        .catch(err => res.status(500).send(err));
+    }catch(err){    
+        res.status(500).json({message:"error",error:err.message,ok:false});
+        console.error(err);
+    }
+})
+app.post("/foro/like/:id/delete",async(req,res)=>{
+    try{
+        const id = req.params.id
+        const request = await turso.execute({
+            sql:"DELETE FROM likes WHERE id=:id",
+            args:{id}
+        })
+        .then(data => res.status(200).json(data.rows))
+        .catch(err => res.status(500).send(err));
+    }catch(err){    
+        res.status(500).json({message:"error",error:err.message,ok:false});
+        console.error(err);
+    }
+})
 // autenticaciones
 
 app.post("/login/autenticacion",async(req,res)=>{
