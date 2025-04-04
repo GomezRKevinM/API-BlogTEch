@@ -221,7 +221,7 @@ app.post("/foro/likes",async(req,res)=>{
     try{
         const values = req.body;
         const consultarUsuario = await turso.execute({
-            sql:"SELECT * FROM usuarios WHERE username=:username",
+            sql:"SELECT * FROM usuario WHERE username=:username",
             args:{username:values.usuario}
         })
         console.log(consultarUsuario.rows);
