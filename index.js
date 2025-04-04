@@ -196,6 +196,10 @@ app.post("/foro/comentario/",async(req,res)=>{
             args:{usuario:values.usuario,comentario:values.comentario,post:values.post,fecha:values.fecha,hora:values.hora}
         });
         if(request.rowsAffected>0){
+            const update = await turso.execute({
+                sql:"UPDATE publicacion SET comentarios=comentarios+1 WHERE id=:id",
+                args:{id:values.post}
+            })
             res.status(200).json({message:"comentario enviado",data:request.rows,ok:true});
         }else{
             res.status(500).json({message:"error al enviar datos",error:err.message});
