@@ -183,7 +183,25 @@ app.get("/foro/comentarios/:id",async(req,res)=>{
         console.error(err);
     }
 })
-
+app.post("/foro/comentario/",async(req,res)=>{
+    try{
+        const values = req.body;
+        const query = 'INSERT INTO comentarios (usuario,comentario,post,fecha,hora) VALUES (:usuario,:comentario,:post,:fecha,:hora)';
+        const request = await turso.execute({
+            sql: query,
+            args:{usuario:values.usuario,comentario:values.comentario,post:values.post,fecha:values.fecha,hora:values.hora}
+        });
+        if(request.rowsAffected>0){
+            res.status(200).json({message:"comentario enviado",data:request.rows,ok:true});
+        }else{
+            res.status(500).json({message:"error al enviar datos",error:err.message});
+        }
+    }catch(err){
+        res.status(500).json({message:"error",error:err.message,ok:false});
+        console.error(err);
+    }
+    
+})
 // autenticaciones
 
 app.post("/login/autenticacion",async(req,res)=>{
