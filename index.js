@@ -250,7 +250,7 @@ app.get("/foro/userLikes",async(req,res)=>{
     try{
         const request = await turso.execute({
             sql:"SELECT * FROM likes WHERE usuario=:usuario",
-            args:{usuario:req.session.usuario}
+            args:{usuario:req.body.usuario}
         })
         .then(data => res.status(200).json(data.rows))
         .catch(err => res.status(500).send(err));
