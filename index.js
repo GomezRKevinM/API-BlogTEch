@@ -161,7 +161,11 @@ app.get('/foro/publicaciones/',async(req,res)=>{
 })
 app.get('/foro/publicaciones/:id',async(req,res)=>{
     try{
-        const request = await turso.execute("SELECT * FROM publicacion")
+        req.params.id
+        const request = await turso.execute({
+            sql:"SELECT * FROM publicacion WHERE id=:id",
+            args:{id:req.params.id}
+        })
         .then(data => res.status(200).json(data.rows))
         .catch(err => res.status(500).send(err));
     }catch(err){
