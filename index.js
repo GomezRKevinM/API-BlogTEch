@@ -219,6 +219,8 @@ app.post("/foro/comentario/",async(req,res)=>{
 })
 app.post("/foro/likes",async(req,res)=>{
     try{
+        const values = req.body;
+
         const consultarUsuario = await turso.execute({
             sql:"SELECT * FROM usuarios WHERE username=:username",
             args:{username:values.usuario}
@@ -226,7 +228,6 @@ app.post("/foro/likes",async(req,res)=>{
         if(consultarUsuario.rows.length==0){
             return res.status(404).json({message:"usuario no encontrado",ok:false});
         }
-        const values = req.body;
         const query = 'INSERT INTO likes (usuario,post) VALUES (:usuario,:post)';
         const request = await turso.execute({
             sql: query,
