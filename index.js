@@ -246,7 +246,7 @@ app.post("/foro/dislike",async(req,res)=>{
     }
 })
 
-app.get("/foro/userLikes",async(req,res)=>{
+app.post("/foro/userLikes",async(req,res)=>{
     try{
         const request = await turso.execute({
             sql:"SELECT * FROM likes WHERE usuario=:usuario",
