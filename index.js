@@ -186,7 +186,7 @@ app.get("/foro/comentarios/:id",async(req,res)=>{
 
 // autenticaciones
 
-app.get("/login/autenticacion",async(req,res)=>{
+app.post("/login/autenticacion",async(req,res)=>{
     try{
         const datos = req.body;
         console.log('datos recibidos: ',datos);
