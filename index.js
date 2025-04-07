@@ -207,6 +207,19 @@ app.get('/foro/publicaciones/',async(req,res)=>{
         console.error(err);
     }
 })
+app.get('/foro/publicaciones/:categoria',async(req,res)=>{
+    try{
+        const request = await turso.execute({
+            sql:"SELECT * FROM publicacion WHERE categoria=:categoria ORDER BY id DESC",
+            args:{categoria:req.params.categoria}
+        })
+        .then(data => res.status(200).json(data.rows))
+        .catch(err => res.status(500).send(err));
+    }catch(err){
+        res.status(500).json({message:"error",error:err.message,ok:false});
+        console.error(err);
+    }
+})
 app.get('/foro/publicaciones/:id',async(req,res)=>{
     try{
         req.params.id
