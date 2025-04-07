@@ -55,6 +55,18 @@ app.get('/api/users', async (req, res) => {
     }
 
 });
+function getDate(){
+    const date = new Date();
+    let fecha = date.toISOString().split('T')[0];
+    fecha = fecha.replace(/-/g, "/");
+    const time = date.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+    });
+
+    return{ fecha, time };
+}
 // app.post('/login', (req, res) => {
 //     if (!req.body || Object.keys(req.body).length === 0) {
 //         return res.status(400).send('El cuerpo de la solicitud está vacío o no es válido.');
@@ -173,7 +185,7 @@ app.post('/foro/newPublicacion',async(req,res)=>{
         const query = 'INSERT INTO publicacion (fecha,usuario,contenido,hora,likes,comentarios,categoria) VALUES (:fecha,:usuario,:contenido,:hora,:likes,:comentarios,:categoria)';
         const request = await turso.execute({
             sql: query,
-            args:{fecha:values.fecha,usuario:values.usuario,contenido:values.contenido,hora:values.hora,likes:0,comentarios:0,categoria:values.categoria}
+            args:{fecha:values.fecha||getDate().fecha,usuario:values.usuario,contenido:values.contenido,hora:values.hora||getDate().time,likes:0,comentarios:0,categoria:values.categoria}
         });
         if(request.rowsAffected>0){
             res.status(200).json({message:"publicacion enviada",data:request.rows,ok:true});
