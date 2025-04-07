@@ -187,7 +187,7 @@ app.post('/foro/newPublicacion',async(req,res)=>{
 })
 app.get('/foro/publicaciones/',async(req,res)=>{
     try{
-        const request = await turso.execute("SELECT * FROM publicacion ORDER BY fecha DESC")
+        const request = await turso.execute("SELECT * FROM publicacion ORDER BY id DESC")
         .then(data => res.status(200).json(data.rows))
         .catch(err => res.status(500).send(err));
     }catch(err){
