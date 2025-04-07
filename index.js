@@ -173,7 +173,7 @@ app.post('/foro/newPublicacion',async(req,res)=>{
         const query = 'INSERT INTO publicacion (fecha,usuario,contenido,hora,likes,comentarios,categoria) VALUES (:fecha,:usuario,:contenido,:hora,:likes,:comentarios,:categoria)';
         const request = await turso.execute({
             sql: query,
-            args:{fecha:values.fecha,usuario:values.usuario,contenido:values.contenido,hora:values.hora,likes:values.likes,comentarios:values.comentarios,categoria:values.categoria}
+            args:{fecha:values.fecha,usuario:values.usuario,contenido:values.contenido,hora:values.hora,likes:0,comentarios:0,categoria:values.categoria}
         });
         if(request.rowsAffected>0){
             res.status(200).json({message:"publicacion enviada",data:request.rows,ok:true});
@@ -187,7 +187,7 @@ app.post('/foro/newPublicacion',async(req,res)=>{
 })
 app.get('/foro/publicaciones/',async(req,res)=>{
     try{
-        const request = await turso.execute("SELECT * FROM publicacion")
+        const request = await turso.execute("SELECT * FROM publicacion ORDER BY fecha DESC")
         .then(data => res.status(200).json(data.rows))
         .catch(err => res.status(500).send(err));
     }catch(err){
