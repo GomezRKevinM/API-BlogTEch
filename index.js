@@ -44,7 +44,7 @@ app.use(express.json());
 // Ruta API para obtener datos
 app.get('/api/users', async (req, res) => {
     try{
-        const query = 'SELECT * FROM usuarios';
+        const query = 'SELECT * FROM usuario';
         const request = await turso.execute(query)
         .then(data => res.status(200).json({message:"usuarios obtenidos",data:data.rows}))
         .catch(err => res.status(500).json({message:"error",error:err.message}));
@@ -101,9 +101,23 @@ app.post('/api/user',async (req,res)=>{
         return res.status(400).send('El cuerpo de la solicitud está vacío o no es válido.');
     }
     const values = req.body;
-    insertarDatos("usuarios", values)
-        .then(data => res.status(201).json({exito: true,data}))
-        .catch(err => res.status(500).json({exito: false,error:err.message}));
+    const userExist = await turso.execute({
+        sql:"SELECT * FROM usuario WHERE id=:id OR username=:username",
+        args:{id:values.id,username:values.username}
+    });
+    if(userExist.rows.length>0){
+        res.status(400).json({message:"el usuario ya existe",data:userExist.rows,ok:false});
+        return;
+    }
+    const request = await turso.execute({
+        sql: 'INSERT INTO usuario (id,nombre,telefono,username,correo,username,password,creado) VALUES (:id,:nombre,:telefono,:username,:correo,:username,:password,:creado)',
+        args:{id:values.id,nombre:values.nombre,telefono:values.telefono,username:values.username,correo:values.correo,password:values.password,creado:values.creado}
+    });
+    if(request.rowsAffected>0){
+        res.status(200).json({message:"usuario creado exitosamente",data:request.rows,ok:true});
+    }else{
+        res.status(500).json({message:"error al enviar datos",error:err.message});
+    }
 })
 app.post('/api/coment',async(req,res)=>{
     try{
@@ -136,7 +150,7 @@ app.put('/api/user/update',(req,res)=>{
     const condicion = {
         id:id_user
     }
-    actualizarDatos("usuarios",values,condicion)
+    actualizarDatos("usuario",values,condicion)
 })
 app.get('/foro/categorias',async(req,res)=>{
     try{
@@ -191,7 +205,7 @@ app.post("/foro/comentario/",async(req,res)=>{
     try{
         const values = req.body;
         const consultarUsuario = await turso.execute({
-            sql:"SELECT * FROM usuarios WHERE username=:username",
+            sql:"SELECT * FROM usuario WHERE username=:username",
             args:{username:values.usuario}
         })
         if(consultarUsuario.rows.length==0){
