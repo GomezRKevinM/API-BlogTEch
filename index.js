@@ -163,6 +163,28 @@ app.get('/foro/categorias',async(req,res)=>{
         console.error(err);
     }
 })
+app.post('/foro/newPublicacion',async(req,res)=>{
+    try{
+        if (!req.body || Object.keys(req.body).length === 0) {
+            return res.status(400).send('El cuerpo de la solicitud está vacío o no es válido.');
+        }
+        const values = req.body;
+        console.log(values);
+        const query = 'INSERT INTO publicacion (fecha,usuario,contenido,hora,likes,comentarios,categoria) VALUES (:fecha,:usuario,:contenido,:hora,:likes,:comentarios,:categoria)';
+        const request = await turso.execute({
+            sql: query,
+            args:{fecha:values.fecha,usuario:values.usuario,contenido:values.contenido,hora:values.hora,likes:values.likes,comentarios:values.comentarios,categoria:values.categoria}
+        });
+        if(request.rowsAffected>0){
+            res.status(200).json({message:"publicacion enviada",data:request.rows,ok:true});
+        }else{
+            res.status(500).json({message:"error al enviar datos",error:err.message});
+        }
+    }catch(err){
+        res.status(500).json({message:"error",error:err.message});
+        console.error(err);
+    }
+})
 app.get('/foro/publicaciones/',async(req,res)=>{
     try{
         const request = await turso.execute("SELECT * FROM publicacion")
