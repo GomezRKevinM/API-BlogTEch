@@ -260,7 +260,7 @@ app.post("/foro/likes",async(req,res)=>{
         console.error(err);
     }
 })
-app.post("/foro/dislike",async(req,res)=>{
+app.delete("/foro/dislike",async(req,res)=>{
     try{
         const values = req.body;        
         const update = await turso.execute({
