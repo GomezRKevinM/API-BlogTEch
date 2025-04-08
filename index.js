@@ -220,7 +220,7 @@ app.get('/foro/publicaciones/:categoria',async(req,res)=>{
         console.error(err);
     }
 })
-app.get('/foro/publicaciones/:id',async(req,res)=>{
+app.get('/users/publicaciones/:id',async(req,res)=>{
     try{
         req.params.id
         const request = await turso.execute({
