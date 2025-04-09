@@ -107,6 +107,29 @@ app.get('/api/coments',async (req,res)=>{
         console.error(err);
     }
 })
+app.post('/api/coment',async(req,res)=>{
+    try{
+        if (!req.body || Object.keys(req.body).length === 0) {
+            return res.status(400).send('El cuerpo de la solicitud está vacío o no es válido.');
+        }
+        const values = req.body;
+        console.log(values);
+        const query = 'INSERT INTO comentarios (usuario,comentario,post) VALUES (:usuario,:comentario,:post)';
+        const request = await turso.execute({
+            sql: query,
+            args:{usuario:values.usuario,comentario:values.comentario,post:values.post}
+        });
+        if(request.rowsAffected>0){
+            res.status(200).json({message:"comentario enviado",data:request.rows,ok:true});
+        }else{
+            res.status(500).json({message:"error al enviar datos",error:err.message});
+        }
+    }catch(err){
+        res.status(500).json({message:"error",error:err.message});
+        console.error(err);
+    }
+
+})
 
 app.post('/api/user',async (req,res)=>{
     if (!req.body || Object.keys(req.body).length === 0) {
@@ -131,29 +154,6 @@ app.post('/api/user',async (req,res)=>{
         res.status(500).json({message:"error al enviar datos",error:err.message});
     }
 })
-app.post('/api/coment',async(req,res)=>{
-    try{
-        if (!req.body || Object.keys(req.body).length === 0) {
-            return res.status(400).send('El cuerpo de la solicitud está vacío o no es válido.');
-        }
-        const values = req.body;
-        console.log(values);
-        const query = 'INSERT INTO comentarios (usuario,comentario,post) VALUES (:usuario,:comentario,:post)';
-        const request = await turso.execute({
-            sql: query,
-            args:{usuario:values.usuario,comentario:values.comentario,post:values.post}
-        });
-        if(request.rowsAffected>0){
-            res.status(200).json({message:"comentario enviado",data:request.rows,ok:true});
-        }else{
-            res.status(500).json({message:"error al enviar datos",error:err.message});
-        }
-    }catch(err){
-        res.status(500).json({message:"error",error:err.message});
-        console.error(err);
-    }
-
-})
 app.put('/api/user/update',(req,res)=>{
     if (!req.body || Object.keys(req.body).length === 0) {
         return res.status(400).send('El cuerpo de la solicitud está vacío o no es válido.');
@@ -164,6 +164,7 @@ app.put('/api/user/update',(req,res)=>{
     }
     actualizarDatos("usuario",values,condicion)
 })
+
 app.get('/foro/categorias',async(req,res)=>{
     try{
         const request = await turso.execute("SELECT * FROM categoria")
@@ -175,6 +176,29 @@ app.get('/foro/categorias',async(req,res)=>{
         console.error(err);
     }
 })
+app.post('/foro/newCategoria',async(req,res)=>{
+    try{
+        if (!req.body || Object.keys(req.body).length === 0) {
+            return res.status(400).send('El cuerpo de la solicitud está vacío o no es válido.');
+        }
+        const values = req.body;
+        console.log(values);
+        const query = 'INSERT INTO categoria (nombre,creado) VALUES (:nombre,:creado)';
+        const request = await turso.execute({
+            sql: query,
+            args:{nombre:values.nombre,creado:values.creado}
+        });
+        if(request.rowsAffected>0){
+            res.status(200).json({message:"categoria Agregada exitosamente",data:request.rows,ok:true});
+        }else{
+            res.status(500).json({message:"error al enviar datos",error:err.message});
+        }
+    }catch(err){
+        res.status(500).json({message:"error",error:err.message});
+        console.error(err);
+    }
+})
+
 app.post('/foro/newPublicacion',async(req,res)=>{
     try{
         if (!req.body || Object.keys(req.body).length === 0) {
