@@ -459,6 +459,12 @@ app.post("/foro/tema/new-comentario",async(req,res)=>{
         })
         .then(data => res.status(200).json({exito:true,data:data.rows,message:"comentario enviado",ok:true}))
         .catch(err => res.status(500).send(err));
+        if(request.rowsAffected>0){
+            const update = await turso.execute({
+                sql:"UPDATE temas SET comentarios=comentarios+1 WHERE id=:id",
+                args:{id:values.tema}
+            })
+        }
     } catch (error) {
         res.status(500).json({message:"error",error:err.message,ok:false});
     }
