@@ -405,6 +405,20 @@ app.get("/foro/temas",async(req,res)=>{
         console.error(err);
     }
 })
+app.get("/foro/tema/:id",async(req,res)=>{
+    try{
+        const id = req.params.id
+        const request = await turso.execute({
+            sql:"SELECT * FROM temas WHERE id=:id",
+            args:{id}
+        })
+        .then(data => res.status(200).json(data.rows))
+        .catch(err => res.status(500).send(err));
+    }catch(err){    
+        res.status(500).json({message:"error",error:err.message,ok:false});
+        console.error(err);
+    }
+})
 app.post("/foro/new-tema",async(req,res)=>{
     try{
         const values = req.body;
