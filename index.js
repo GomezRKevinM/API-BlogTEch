@@ -394,6 +394,24 @@ app.post("/foro/like/:id/delete",async(req,res)=>{
         console.error(err);
     }
 })
+
+app.post("/foro/new-tema",async(req,res)=>{
+    try{
+        const values = req.body;
+        const request = await turso.execute({
+            sql:"INSERT INTO temas (usuario,comentario,tema,contenido) VALUES (:usuario,:comentario,:tema,:contenido)",
+            args:{usuario:values.usuario,comentario:values.comentario,tema:values.tema,contenido:values.contenido}
+        });
+        if(request.rowsAffected>0){
+            res.status(200).json({message:"tema enviado",data:request.rows,ok:true});
+        }else{
+            res.status(500).json({message:"error al enviar datos",error:err.message});
+        }
+    }catch(err){
+        res.status(500).json({message:"error",error:err.message,ok:false});
+        console.error(err);
+    }
+})
 // autenticaciones
 
 app.post("/login/autenticacion",async(req,res)=>{
