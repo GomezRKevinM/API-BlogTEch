@@ -395,6 +395,16 @@ app.post("/foro/like/:id/delete",async(req,res)=>{
     }
 })
 
+app.get("/foro/temas",async(req,res)=>{
+    try{
+        const request = await turso.execute("SELECT id,tema FROM temas")
+        .then(data => res.status(200).json(data.rows))
+        .catch(err => res.status(500).send(err));
+    }catch(err){    
+        res.status(500).json({message:"error",error:err.message,ok:false});
+        console.error(err);
+    }
+})
 app.post("/foro/new-tema",async(req,res)=>{
     try{
         const values = req.body;
