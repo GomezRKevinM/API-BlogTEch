@@ -399,8 +399,8 @@ app.post("/foro/new-tema",async(req,res)=>{
     try{
         const values = req.body;
         const request = await turso.execute({
-            sql:"INSERT INTO temas (usuario,comentario,tema,contenido) VALUES (:usuario,:comentario,:tema,:contenido)",
-            args:{usuario:values.usuario,comentario:values.comentario,tema:values.tema,contenido:values.contenido}
+            sql:"INSERT INTO temas (usuario,comentarios,tema,contenido) VALUES (:usuario,:comentarios,:tema,:contenido)",
+            args:{usuario:values.usuario,comentarios:values.comentario,tema:values.tema,contenido:values.contenido}
         });
         if(request.rowsAffected>0){
             res.status(200).json({message:"tema enviado",data:request.rows,ok:true});
