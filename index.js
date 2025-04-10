@@ -436,6 +436,33 @@ app.post("/foro/new-tema",async(req,res)=>{
         console.error(err);
     }
 })
+app.get("/foro/tema/:id/comentarios",async(req,res)=>{
+    try{
+        const id = req.params.id
+        const request = await turso.execute({
+            sql:"SELECT * FROM comentarios WHERE tema=:id",
+            args:{id}
+        })
+        .then(data => res.status(200).json(data.rows))
+        .catch(err => res.status(500).send(err));
+    }catch(err){    
+        res.status(500).json({message:"error",error:err.message,ok:false});
+        console.error(err);
+    }
+})
+app.post("/foro/tema/new-comentario",async(req,res)=>{
+    try {
+        const values = req.body;
+        const request = await turso.execute({
+            sql:"INSERT INTO comentarios (usuario,comentario,fecha,hora,tema) VALUES (:usuario,:comentario,:fecha,:hora,:tema)",
+            args:{usuario:values.usuario,comentario:values.comentario,fecha: getDate().fecha,hora: getDate().time.replace(/[. ]/g,''),tema:values.tema}
+        })
+        .then(data => res.status(200).json({exito:true,data:data.rows,message:"comentario enviado",ok:true}))
+        .catch(err => res.status(500).send(err));
+    } catch (error) {
+        res.status(500).json({message:"error",error:err.message,ok:false});
+    }
+})
 // autenticaciones
 
 app.post("/login/autenticacion",async(req,res)=>{
