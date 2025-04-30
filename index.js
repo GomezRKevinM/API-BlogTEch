@@ -1,10 +1,12 @@
 import express from 'express';
-import session from 'express-session';
+
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { createClient } from '@libsql/client'; 
 import morgan from 'morgan';
-import e from 'express';
+
+import multer from 'multer';
+import path from 'path';
 
 
 
@@ -39,7 +41,28 @@ export const turso = createClient({
 
 app.use(express.json());
 
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, path.join(process.cwd(), './users/image'));
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + '-' + file.originalname);
+    }
+});
+const upload = multer({ storage });
 
+
+app.post('/api/user/upload-image', upload.single('imagen'), (req, res) => {
+    if (!req.file) {
+        return res.status(400).json({ message: 'No se subió ninguna imagen', ok: false });
+    }
+    res.status(200).json({ 
+        message: 'Imagen subida correctamente', 
+        filename: req.file.filename, 
+        path: req.file.path, 
+        ok: true 
+    });
+});
 
 // Ruta API para obtener datos
 app.get('/api/users', async (req, res) => {
@@ -469,6 +492,7 @@ app.post("/foro/tema/new-comentario",async(req,res)=>{
         res.status(500).json({message:"error",error:err.message,ok:false});
     }
 })
+
 // autenticaciones
 
 app.post("/login/autenticacion",async(req,res)=>{
