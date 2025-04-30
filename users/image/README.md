@@ -1,0 +1,1 @@
+Esta carpeta tiene como propósito almacenar las imágenes que los usuarios suben a la aplicación.

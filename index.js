@@ -56,6 +56,7 @@ app.post('/api/user/upload-image', upload.single('imagen'), (req, res) => {
     if (!req.file) {
         return res.status(400).json({ message: 'No se subió ninguna imagen', ok: false });
     }
+
     res.status(200).json({ 
         message: 'Imagen subida correctamente', 
         filename: req.file.filename, 
